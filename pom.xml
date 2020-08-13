@@ -40,5 +40,6 @@
 		<module>orebfuscator-plugin</module>
 		<module>orebfuscator-nms</module>
 		<module>orebfuscator-common</module>
+		<module>orebfuscator-addon</module>
 	</modules>
 </project>
