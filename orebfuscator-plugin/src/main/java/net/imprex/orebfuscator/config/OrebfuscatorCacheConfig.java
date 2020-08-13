@@ -35,6 +35,18 @@ public class OrebfuscatorCacheConfig implements CacheConfig {
 		this.expireAfterAccess = section.getLong("expireAfterAccess", TimeUnit.SECONDS.toMillis(30));
 	}
 
+	public void deserialize(ConfigurationSection section) {
+		section.set("enabled", this.enabled);
+		Path worldPath = Bukkit.getWorldContainer().toPath().toAbsolutePath().normalize();
+		section.set("baseDirectory", worldPath.relativize(this.baseDirectory));
+
+		section.set("maximumOpenRegionFiles", this.maximumOpenRegionFiles);
+		section.set("deleteRegionFilesAfterAccess", this.deleteRegionFilesAfterAccess);
+
+		section.set("maximumSize", this.maximumSize);
+		section.set("expireAfterAccess", this.expireAfterAccess);
+	}
+
 	private void serializeBaseDirectory(ConfigurationSection section, String defaultPath) {
 		Path worldPath = Bukkit.getWorldContainer().toPath().toAbsolutePath().normalize();
 		String baseDirectory = section.getString("baseDirectory", defaultPath);
