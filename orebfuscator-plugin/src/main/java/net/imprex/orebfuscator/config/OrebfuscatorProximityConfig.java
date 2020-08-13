@@ -5,12 +5,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 
 import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 
 import net.imprex.orebfuscator.NmsInstance;
@@ -34,7 +33,7 @@ public class OrebfuscatorProximityConfig implements ProximityConfig {
 		}
 	}
 
-	private final List<World> worlds = new ArrayList<>();
+	private final List<String> worlds = new ArrayList<>();
 
 	private boolean enabled;
 	private int distance;
@@ -59,12 +58,14 @@ public class OrebfuscatorProximityConfig implements ProximityConfig {
 	protected void serialize(ConfigurationSection section) {
 		this.enabled = section.getBoolean("enabled", true);
 
-		ConfigParser.serializeWorldList(section, this.worlds, "worlds");
-		if (this.worlds.isEmpty()) {
+		List<String> worldNameList = section.getStringList("worlds");
+		if (worldNameList == null || worldNameList.isEmpty()) {
 			this.failSerialize(
 					String.format("config section '%s.worlds' is missing or empty", section.getCurrentPath()));
 			return;
 		}
+		this.worlds.clear();
+		this.worlds.addAll(worldNameList);
 
 		this.distance = section.getInt("distance", 8);
 		this.distanceSquared = this.distance * this.distance;
@@ -127,7 +128,7 @@ public class OrebfuscatorProximityConfig implements ProximityConfig {
 	}
 
 	@Override
-	public List<World> worlds() {
+	public List<String> worlds() {
 		return Collections.unmodifiableList(this.worlds);
 	}
 

@@ -6,12 +6,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 
 import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 
 import net.imprex.orebfuscator.NmsInstance;
@@ -21,7 +20,7 @@ import net.imprex.orebfuscator.util.WeightedRandom;
 public class OrebfuscatorWorldConfig implements WorldConfig {	
 
 	private boolean enabled;
-	private final List<World> worlds = new ArrayList<>();
+	private final List<String> worlds = new ArrayList<>();
 	private final Set<Material> hiddenBlocks = new HashSet<>();
 
 	private final Map<Material, Integer> randomBlocks = new HashMap<>();
@@ -40,12 +39,14 @@ public class OrebfuscatorWorldConfig implements WorldConfig {
 	protected void serialize(ConfigurationSection section) {
 		this.enabled = section.getBoolean("enabled", true);
 
-		ConfigParser.serializeWorldList(section, this.worlds, "worlds");
-		if (this.worlds.isEmpty()) {
+		List<String> worldNameList = section.getStringList("worlds");
+		if (worldNameList == null || worldNameList.isEmpty()) {
 			this.failSerialize(
 					String.format("config section '%s.worlds' is missing or empty", section.getCurrentPath()));
 			return;
 		}
+		this.worlds.clear();
+		this.worlds.addAll(worldNameList);
 
 		this.serializeMaterialSet(section, this.hiddenBlocks, "hiddenBlocks");
 		if (this.hiddenBlocks.isEmpty()) {
@@ -97,7 +98,7 @@ public class OrebfuscatorWorldConfig implements WorldConfig {
 	}
 
 	@Override
-	public List<World> worlds() {
+	public List<String> worlds() {
 		return Collections.unmodifiableList(this.worlds);
 	}
 

@@ -8,9 +8,18 @@ import net.imprex.orebfuscator.NmsInstance;
 
 public class OrebfuscatorBlockMask implements BlockMask {
 
+	static final OrebfuscatorBlockMask EMPTY_MASK = new OrebfuscatorBlockMask(null, null);
+
+	static OrebfuscatorBlockMask create(OrebfuscatorWorldConfig worldConfig, OrebfuscatorProximityConfig proximityConfig) {
+		if (worldConfig != null || proximityConfig != null) {
+			return new OrebfuscatorBlockMask(worldConfig, proximityConfig);
+		}
+		return EMPTY_MASK;
+	}
+
 	private final short[] blockMask = new short[NmsInstance.getMaterialSize()];
 
-	public OrebfuscatorBlockMask(OrebfuscatorWorldConfig worldConfig, OrebfuscatorProximityConfig proximityConfig) {
+	private OrebfuscatorBlockMask(OrebfuscatorWorldConfig worldConfig, OrebfuscatorProximityConfig proximityConfig) {
 		if (worldConfig != null && worldConfig.enabled()) {
 			for (Material material : worldConfig.getHiddenBlocks()) {
 				this.setBlockMask(material, BLOCK_MASK_OBFUSCATE);
