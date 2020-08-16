@@ -84,8 +84,18 @@ public class OrebfuscatorCacheConfig implements CacheConfig {
 	}
 
 	@Override
+	public void enabled(boolean enabled) {
+		this.enabled = enabled;
+	}
+
+	@Override
 	public Path baseDirectory() {
 		return this.baseDirectory;
+	}
+
+	@Override
+	public void baseDirectory(Path path) {
+		this.baseDirectory = path;
 	}
 
 	@Override
@@ -100,8 +110,18 @@ public class OrebfuscatorCacheConfig implements CacheConfig {
 	}
 
 	@Override
+	public void maximumOpenRegionFiles(int count) {
+		this.maximumOpenRegionFiles = count;
+	}
+
+	@Override
 	public long deleteRegionFilesAfterAccess() {
 		return this.deleteRegionFilesAfterAccess;
+	}
+
+	@Override
+	public void deleteRegionFilesAfterAccess(long expire) {
+		this.deleteRegionFilesAfterAccess = expire;
 	}
 
 	@Override
@@ -110,7 +130,17 @@ public class OrebfuscatorCacheConfig implements CacheConfig {
 	}
 
 	@Override
+	public void maximumSize(int size) {
+		this.maximumSize = size;
+	}
+
+	@Override
 	public long expireAfterAccess() {
 		return this.expireAfterAccess;
+	}
+
+	@Override
+	public void expireAfterAccess(long expire) {
+		this.expireAfterAccess = expire;
 	}
 }
