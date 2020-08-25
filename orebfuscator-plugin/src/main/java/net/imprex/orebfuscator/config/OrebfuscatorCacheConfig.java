@@ -35,6 +35,17 @@ public class OrebfuscatorCacheConfig implements CacheConfig {
 		this.expireAfterAccess = section.getLong("expireAfterAccess", TimeUnit.SECONDS.toMillis(30));
 	}
 
+	public void deserialize(ConfigurationSection section) {
+		section.set("enabled", this.enabled);
+		section.set("baseDirectory", this.baseDirectory.toString());
+
+		section.set("maximumOpenRegionFiles", this.maximumOpenRegionFiles);
+		section.set("deleteRegionFilesAfterAccess", this.deleteRegionFilesAfterAccess);
+
+		section.set("maximumSize", this.maximumSize);
+		section.set("expireAfterAccess", this.expireAfterAccess);
+	}
+
 	private void serializeBaseDirectory(ConfigurationSection section, String defaultPath) {
 		Path worldPath = Bukkit.getWorldContainer().toPath().toAbsolutePath().normalize();
 		String baseDirectory = section.getString("baseDirectory", defaultPath);
@@ -72,8 +83,18 @@ public class OrebfuscatorCacheConfig implements CacheConfig {
 	}
 
 	@Override
+	public void enabled(boolean enabled) {
+		this.enabled = enabled;
+	}
+
+	@Override
 	public Path baseDirectory() {
 		return this.baseDirectory;
+	}
+
+	@Override
+	public void baseDirectory(Path path) {
+		this.baseDirectory = path;
 	}
 
 	@Override
@@ -88,8 +109,18 @@ public class OrebfuscatorCacheConfig implements CacheConfig {
 	}
 
 	@Override
+	public void maximumOpenRegionFiles(int count) {
+		this.maximumOpenRegionFiles = count;
+	}
+
+	@Override
 	public long deleteRegionFilesAfterAccess() {
 		return this.deleteRegionFilesAfterAccess;
+	}
+
+	@Override
+	public void deleteRegionFilesAfterAccess(long expire) {
+		this.deleteRegionFilesAfterAccess = expire;
 	}
 
 	@Override
@@ -98,7 +129,17 @@ public class OrebfuscatorCacheConfig implements CacheConfig {
 	}
 
 	@Override
+	public void maximumSize(int size) {
+		this.maximumSize = size;
+	}
+
+	@Override
 	public long expireAfterAccess() {
 		return this.expireAfterAccess;
+	}
+
+	@Override
+	public void expireAfterAccess(long expire) {
+		this.expireAfterAccess = expire;
 	}
 }
