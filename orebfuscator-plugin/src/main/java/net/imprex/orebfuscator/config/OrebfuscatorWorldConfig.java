@@ -1,10 +1,8 @@
 package net.imprex.orebfuscator.config;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -63,11 +61,12 @@ public class OrebfuscatorWorldConfig implements WorldConfig {
 		}
 	}
 
-	public void deserialize(ConfigurationSection section) {
+	protected void deserialize(ConfigurationSection section) {
 		section.set("enabled", this.enabled);
 		section.set("worlds", this.worlds);
 
-		// TODO deserialize hiddenBlocks and randomBlocks
+		ConfigParser.deserializeMaterialSet(section, this.hiddenBlocks, "hiddenBlocks");
+		ConfigParser.deserializeRandomMaterialList(section, this.randomBlocks, "randomBlocks");
 	}
 
 	private void serializeMaterialSet(ConfigurationSection section, Set<Material> materials, String path) {
@@ -108,94 +107,17 @@ public class OrebfuscatorWorldConfig implements WorldConfig {
 
 	@Override
 	public List<String> worlds() {
-		return Collections.unmodifiableList(this.worlds);
-	}
-
-	@Override
-	public void worldsSet(List<String> worlds) {
-		for (Iterator<String> iterator = this.worlds.iterator(); iterator.hasNext(); ) {
-			String world = iterator.next();
-
-			if (worlds.contains(world)) {
-				worlds.remove(world);
-			} else {
-				iterator.remove();
-			}
-		}
-		this.worlds.addAll(worlds);
-	}
-
-	@Override
-	public void worldsAdd(String world) {
-		this.worlds.add(world);
-	}
-
-	@Override
-	public void worldsRemove(String world) {
-		this.worlds.remove(world);
+		return this.worlds;
 	}
 
 	@Override
 	public Set<Material> hiddenBlocks() {
-		return Collections.unmodifiableSet(this.hiddenBlocks);
-	}
-
-	@Override
-	public void hiddenBlocksSet(List<Material> materials) {
-		for (Iterator<Material> iterator = this.hiddenBlocks.iterator(); iterator.hasNext(); ) {
-			Material material = iterator.next();
-
-			if (materials.contains(material)) {
-				materials.remove(material);
-			} else {
-				iterator.remove();
-			}
-		}
-		this.hiddenBlocks.addAll(materials);
-	}
-
-	@Override
-	public void hiddenBlocksAdd(Material material) {
-		this.hiddenBlocks.add(material);
-	}
-
-	@Override
-	public void hiddenBlocksRemove(Material material) {
-		this.hiddenBlocks.remove(material);
+		return this.hiddenBlocks;
 	}
 
 	@Override
 	public Set<Material> randomBlocks() {
-		return Collections.unmodifiableSet(this.randomBlocks.keySet());
-	}
-
-	@Override
-	public void randomBlocksSet(List<Material> materials) {
-		for (Iterator<Material> iterator = this.randomBlocks.keySet().iterator(); iterator.hasNext(); ) {
-			Material material = iterator.next();
-
-			if (materials.contains(material)) {
-				materials.remove(material);
-			} else {
-				iterator.remove();
-			}
-		}
-		for (Material material : materials) {
-			this.randomBlocks.put(material, NmsInstance.getMaterialIds(material).iterator().next());
-		}
-		this.initialize();
-	}
-
-	@Override
-	public void randomBlocksAdd(Material material) {
-		this.randomBlocks.put(material, NmsInstance.getMaterialIds(material).iterator().next());
-		this.initialize();
-	}
-
-	@Override
-	public void randomBlocksRemove(Material material) {
-		this.randomBlocks.remove(material);
-		this.initialize();
+		return this.randomBlocks.keySet();
 	}
 
 	@Override

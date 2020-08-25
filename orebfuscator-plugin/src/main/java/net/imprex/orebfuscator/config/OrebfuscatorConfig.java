@@ -16,6 +16,7 @@ import java.util.WeakHashMap;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.plugin.Plugin;
 
 import net.imprex.orebfuscator.NmsInstance;
@@ -51,6 +52,12 @@ public class OrebfuscatorConfig implements Config {
 
 		this.serialize(this.plugin.getConfig());
 		this.initialize();
+	}
+
+	public void store() {
+		this.createConfigIfNotExist();
+
+		this.deserialize(this.plugin.getConfig());
 	}
 
 	private void createConfigIfNotExist() {
@@ -132,6 +139,27 @@ public class OrebfuscatorConfig implements Config {
 		} else {
 			OFCLogger.warn("config section 'proximity' is missing or empty");
 		}
+	}
+
+	private void deserialize(ConfigurationSection section) {
+		this.generalConfig.deserialize(section);
+		this.cacheConfig.deserialize(section);
+
+		List<ConfigurationSection> worldSectionList = new ArrayList<>();
+		for (OrebfuscatorWorldConfig worldConfig : this.world) {
+			ConfigurationSection worldSection = new MemoryConfiguration();
+			worldConfig.deserialize(worldSection);
+			worldSectionList.add(worldSection);
+		}
+		section.set("world", worldSectionList);
+
+		List<ConfigurationSection> proximitySectionList = new ArrayList<>();
+		for (OrebfuscatorProximityConfig proximityConfig : this.proximityWorlds) {
+			ConfigurationSection proximitySection = new MemoryConfiguration();
+			proximityConfig.deserialize(proximitySection);
+			proximitySectionList.add(proximitySection);
+		}
+		section.set("proximity", proximitySectionList);
 	}
 
 	private void initialize() {

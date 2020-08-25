@@ -1,7 +1,6 @@
 package net.imprex.orebfuscator.config;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -87,6 +86,16 @@ public class OrebfuscatorProximityConfig implements ProximityConfig {
 		}
 	}
 
+	protected void deserialize(ConfigurationSection section) {
+		section.set("enabled", this.enabled);
+		section.set("worlds", this.worlds);
+		section.set("distance", this.distance);
+		section.set("useFastGazeCheck", this.useFastGazeCheck);
+		
+		ConfigParser.deserializeMaterialSet(section, this.randomBlocks.keySet(), "hiddenBlocks");
+		ConfigParser.deserializeRandomMaterialList(section, randomBlocks, "randomBlocks");
+	}
+
 	private void serializeHiddenBlocks(ConfigurationSection section) {
 		this.hiddenBlocks.clear();
 
@@ -128,13 +137,24 @@ public class OrebfuscatorProximityConfig implements ProximityConfig {
 	}
 
 	@Override
+	public void enabled(boolean enabled) {
+		this.enabled = enabled;
+	}
+
+	@Override
 	public List<String> worlds() {
-		return Collections.unmodifiableList(this.worlds);
+		return this.worlds;
 	}
 
 	@Override
 	public int distance() {
 		return this.distance;
+	}
+
+	@Override
+	public void distance(int distance) {
+		this.distance = distance;
+		this.distanceSquared = this.distance * this.distance;
 	}
 
 	@Override
@@ -145,6 +165,11 @@ public class OrebfuscatorProximityConfig implements ProximityConfig {
 	@Override
 	public boolean useFastGazeCheck() {
 		return this.useFastGazeCheck;
+	}
+
+	@Override
+	public void useFastGazeCheck(boolean fastGaze) {
+		this.useFastGazeCheck = fastGaze;
 	}
 
 	@Override
