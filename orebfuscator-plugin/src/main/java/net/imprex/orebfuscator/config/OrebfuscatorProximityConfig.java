@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.Set;
 
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -16,21 +15,6 @@ import net.imprex.orebfuscator.util.OFCLogger;
 import net.imprex.orebfuscator.util.WeightedRandom;
 
 public class OrebfuscatorProximityConfig implements ProximityConfig {
-
-	private static final short EMPTY_HIDE_CONDITION = createHideCondition(0, true);
-
-	private static short createHideCondition(int y, boolean above) {
-		return (short) ((y & 0xFF) << 8 | (above ? 0x80 : 0x00));
-	}
-
-	static boolean matchHideCondition(short hideCondition, int y) {
-		int expectedY = hideCondition >> 8;
-		if ((hideCondition & 0x80) != 0) {
-			return expectedY < y;
-		} else {
-			return expectedY > y;
-		}
-	}
 
 	private final List<String> worlds = new ArrayList<>();
 
@@ -45,7 +29,8 @@ public class OrebfuscatorProximityConfig implements ProximityConfig {
 	private final List<Integer> randomBlockIds = new ArrayList<>();
 	private WeightedRandom<Integer> randomMaterials = new WeightedRandom<>();
 
-	protected void initialize() {
+	@Override
+	public void initialize() {
 		this.randomMaterials.clear();
 		for (Entry<Material, Integer> entry : this.randomBlocks.entrySet()) {
 			int blockId = NmsInstance.getMaterialIds(entry.getKey()).iterator().next();
@@ -92,7 +77,7 @@ public class OrebfuscatorProximityConfig implements ProximityConfig {
 		section.set("distance", this.distance);
 		section.set("useFastGazeCheck", this.useFastGazeCheck);
 		
-		ConfigParser.deserializeMaterialSet(section, this.randomBlocks.keySet(), "hiddenBlocks");
+		this.deserializeHiddenBlocks(section, this.hiddenBlocks, "hiddenBlocks");
 		ConfigParser.deserializeRandomMaterialList(section, randomBlocks, "randomBlocks");
 	}
 
@@ -113,22 +98,36 @@ public class OrebfuscatorProximityConfig implements ProximityConfig {
 				continue;
 			}
 
-			short hideCondition = EMPTY_HIDE_CONDITION;
+			short hideCondition = HideCondition.EMPTY;
 			if (materialSection.isInt(name + ".y") && materialSection.isBoolean(name + ".above")) {
-				hideCondition = createHideCondition(materialSection.getInt(name + ".y"), materialSection.getBoolean(name + ".above"));
+				hideCondition = HideCondition.create(materialSection.getInt(name + ".y"), materialSection.getBoolean(name + ".above"));
 			}
 
 			this.hiddenBlocks.put(material.get(), hideCondition);
 		}
 	}
 
+	private void deserializeHiddenBlocks(ConfigurationSection section, Map<Material, Short> hiddenBlocks, String path) {
+		ConfigurationSection materialSection = section.createSection(path);
+		for (Entry<Material, Short> entry : this.hiddenBlocks.entrySet()) {
+			Material material = entry.getKey();
+			Optional<String> optional = NmsInstance.getNameByMaterial(material);
+			if (!optional.isPresent()) {
+				OFCLogger.warn(String.format("config section '%s.%s' contains unknown block name '%s'",
+						section.getCurrentPath(), path, material != null ? material.name() : null));
+				continue;
+			}
+
+			String name = optional.get();
+			short condition = entry.getValue();
+			materialSection.set(name + ".y", HideCondition.getY(condition));
+			materialSection.set(name + ".above", HideCondition.getAbove(condition));
+		}
+	}
+
 	private void failSerialize(String message) {
 		this.enabled = false;
 		OFCLogger.warn(message);
-	}
-
-	public Set<Map.Entry<Material, Short>> getHiddenBlocks() {
-		return hiddenBlocks.entrySet();
 	}
 
 	@Override
@@ -173,8 +172,13 @@ public class OrebfuscatorProximityConfig implements ProximityConfig {
 	}
 
 	@Override
-	public List<Integer> randomBlocks() {
-		return this.randomBlockIds;
+	public Map<Material, Short> hiddenBlocks() {
+		return this.hiddenBlocks;
+	}
+
+	@Override
+	public Map<Material, Integer> randomBlocks() {
+		return this.randomBlocks;
 	}
 
 	@Override

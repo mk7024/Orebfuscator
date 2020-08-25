@@ -57,7 +57,13 @@ public class OrebfuscatorConfig implements Config {
 	public void store() {
 		this.createConfigIfNotExist();
 
-		this.deserialize(this.plugin.getConfig());
+		ConfigurationSection section = this.plugin.getConfig();
+		for (String path : section.getKeys(false)) {
+			section.set(path, null);
+		}
+		this.deserialize(section);
+		this.plugin.saveConfig();
+		this.reload();
 	}
 
 	private void createConfigIfNotExist() {
@@ -142,8 +148,10 @@ public class OrebfuscatorConfig implements Config {
 	}
 
 	private void deserialize(ConfigurationSection section) {
-		this.generalConfig.deserialize(section);
-		this.cacheConfig.deserialize(section);
+		section.set("version", CONFIG_VERSION);
+
+		this.generalConfig.deserialize(section.createSection("general"));
+		this.cacheConfig.deserialize(section.createSection("cache"));
 
 		List<ConfigurationSection> worldSectionList = new ArrayList<>();
 		for (OrebfuscatorWorldConfig worldConfig : this.world) {
@@ -160,6 +168,7 @@ public class OrebfuscatorConfig implements Config {
 			proximitySectionList.add(proximitySection);
 		}
 		section.set("proximity", proximitySectionList);
+		System.out.println(section.get("proximity"));
 	}
 
 	private void initialize() {

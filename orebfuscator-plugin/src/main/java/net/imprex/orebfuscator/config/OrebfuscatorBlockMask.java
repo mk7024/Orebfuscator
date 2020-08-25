@@ -26,7 +26,7 @@ public class OrebfuscatorBlockMask implements BlockMask {
 			}
 		}
 		if (proximityConfig != null && proximityConfig.enabled()) {
-			for (Map.Entry<Material, Short> entry : proximityConfig.getHiddenBlocks()) {
+			for (Map.Entry<Material, Short> entry : proximityConfig.hiddenBlocks().entrySet()) {
 				this.setBlockMask(entry.getKey(), entry.getValue());
 			}
 		}
@@ -52,7 +52,7 @@ public class OrebfuscatorBlockMask implements BlockMask {
 	@Override
 	public int mask(int blockId, int y) {
 		short blockMask = this.blockMask[blockId];
-		if (OrebfuscatorProximityConfig.matchHideCondition(blockMask, y)) {
+		if (HideCondition.match(blockMask, y)) {
 			blockMask |= BLOCK_MASK_PROXIMITY;
 		}
 		return blockMask;

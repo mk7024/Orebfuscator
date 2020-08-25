@@ -37,8 +37,7 @@ public class OrebfuscatorCacheConfig implements CacheConfig {
 
 	public void deserialize(ConfigurationSection section) {
 		section.set("enabled", this.enabled);
-		Path worldPath = Bukkit.getWorldContainer().toPath().toAbsolutePath().normalize();
-		section.set("baseDirectory", worldPath.relativize(this.baseDirectory));
+		section.set("baseDirectory", this.baseDirectory.toString());
 
 		section.set("maximumOpenRegionFiles", this.maximumOpenRegionFiles);
 		section.set("deleteRegionFilesAfterAccess", this.deleteRegionFilesAfterAccess);
