@@ -168,7 +168,6 @@ public class OrebfuscatorConfig implements Config {
 			proximitySectionList.add(proximitySection);
 		}
 		section.set("proximity", proximitySectionList);
-		System.out.println(section.get("proximity"));
 	}
 
 	private void initialize() {
