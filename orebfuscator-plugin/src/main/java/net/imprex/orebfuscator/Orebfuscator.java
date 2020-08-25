@@ -29,6 +29,8 @@ public class Orebfuscator extends JavaPlugin implements Listener {
 	private PacketListener packetListener;
 	private ProximityPacketListener proximityPacketListener;
 
+	protected boolean enabled = false;
+
 	@Override
 	public void onEnable() {
 		try {
@@ -60,11 +62,9 @@ public class Orebfuscator extends JavaPlugin implements Listener {
 
 			// Load packet listener
 			this.packetListener = new PacketListener(this);
+			this.enabled = true;
 		} catch(Exception e) {
-			OFCLogger.log(e);
-			OFCLogger.log(Level.SEVERE, "An error occurred by enabling plugin");
-
-			this.getServer().getPluginManager().registerEvent(PluginEnableEvent.class, this, EventPriority.NORMAL, this::onEnableFailed, this);
+			this.enableFailed(e);
 		}
 	}
 
@@ -85,7 +85,14 @@ public class Orebfuscator extends JavaPlugin implements Listener {
 		this.config = null;
 	}
 
-	public void onEnableFailed(Listener listener, Event event) {
+	protected void enableFailed(Exception e) {
+		OFCLogger.log(e);
+		OFCLogger.log(Level.SEVERE, "An error occurred by enabling plugin");
+
+		this.getServer().getPluginManager().registerEvent(PluginEnableEvent.class, this, EventPriority.NORMAL, this::onEnableFailed, this);
+	}
+
+	private void onEnableFailed(Listener listener, Event event) {
 		PluginEnableEvent enableEvent = (PluginEnableEvent) event;
 
 		if (enableEvent.getPlugin() == this) {

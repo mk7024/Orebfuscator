@@ -12,5 +12,7 @@
 	<artifactId>orebfuscator-addon</artifactId>
 	<packaging>pom</packaging>
 
-	<modules></modules>
+	<modules>
+		<module>orebfuscator-addon-gui</module>
+	</modules>
 </project>
