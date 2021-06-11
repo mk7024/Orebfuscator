@@ -4,7 +4,7 @@ build () {
     cd $1
 
     curl -o BuildTools.jar https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar
-    java -jar BuildTools.jar --rev $1
+    java -jar BuildTools.jar --rev $1 --remapped
 
     cd ..
 }
@@ -28,3 +28,4 @@ checkVersion 1.15.1
 checkVersion 1.16.1
 checkVersion 1.16.2
 checkVersion 1.16.4
+checkVersion 1.17
