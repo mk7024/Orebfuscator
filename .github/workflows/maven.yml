@@ -20,7 +20,7 @@ jobs:
     - name: BuildTools cache
       uses: actions/cache@v2
       with:
-        path: ~/.m2/repository/org/spigotmc/spigot
+        path: ~/.m2/repository/org/spigotmc
         key: ${{ runner.os }}-maven-${{ secrets.CACHE_VERSION }}-${{ hashFiles('./.github/workflows/buildtools.sh') }}
     - name: BuildTools Java 8
       run: |
