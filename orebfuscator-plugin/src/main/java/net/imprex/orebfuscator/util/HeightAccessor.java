@@ -18,8 +18,8 @@ public class HeightAccessor {
 		return ACCESSOR_LOOKUP.computeIfAbsent(world, HeightAccessor::new);
 	}
 
-	private static final MethodAccessor WORLD_GET_HEIGHT = getWorldMethod("getHeight"); // TODO actual name in bukkit api once 1.17 is released
-	private static final MethodAccessor WORLD_GET_MIN_BUILD_HEIGHT = getWorldMethod("getMinBuildHeight"); // TODO actual name in bukkit api once 1.17 is released
+	private static final MethodAccessor WORLD_GET_MAX_HEIGHT = getWorldMethod("getMaxHeight");
+	private static final MethodAccessor WORLD_GET_MIN_HEIGHT = getWorldMethod("getMinHeight");
 
 	private static MethodAccessor getWorldMethod(String methodName) {
 		if (ChunkCapabilities.hasDynamicHeight()) {
@@ -28,29 +28,25 @@ public class HeightAccessor {
 		return null;
 	}
 
-	private final int height;
-	private final int minBuildHeight;
+	private final int maxHeight;
+	private final int minHeight;
 
 	private HeightAccessor(World world) {
 		if (ChunkCapabilities.hasDynamicHeight()) {
-			this.height = (int) WORLD_GET_HEIGHT.invoke(world);
-			this.minBuildHeight = (int) WORLD_GET_MIN_BUILD_HEIGHT.invoke(world);
+			this.maxHeight = (int) WORLD_GET_MAX_HEIGHT.invoke(world);
+			this.minHeight = (int) WORLD_GET_MIN_HEIGHT.invoke(world);
 		} else {
-			this.height = 256;
-			this.minBuildHeight = 0;
+			this.maxHeight = 256;
+			this.minHeight = 0;
 		}
 	}
 
-	public int getHeight() {
-		return this.height;
-	}
-
 	public int getMinBuildHeight() {
-		return this.minBuildHeight;
+		return this.minHeight;
 	}
 
 	public int getMaxBuildHeight() {
-		return this.minBuildHeight + this.height;
+		return this.maxHeight;
 	}
 
 	public int getSectionCount() {
