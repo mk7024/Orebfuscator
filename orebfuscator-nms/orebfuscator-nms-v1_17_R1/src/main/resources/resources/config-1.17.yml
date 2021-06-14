@@ -36,6 +36,7 @@ world:
       - copper_ore
       - deepslate_copper_ore
       - stone
+      - deepslate
       - spawner
       - chest
       - ender_chest
