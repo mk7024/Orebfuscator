@@ -6,6 +6,8 @@
 ### Description
 Orebfuscator is plugin for Spigot based Minecraft Servers that modifies packets in order to hide blocks of interest from X-Ray Clients and Texture Packs. Thus it doesn't modify your world and is safe to use.
 
+
+
 ### Features:
 * Plug & Play
 * Highly configurable config
